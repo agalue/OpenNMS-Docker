@@ -20,15 +20,19 @@ sed -i s/PG_PASSWORD/$(echo $POSTGRES_PASSWORD)/g $ONMS_ETC/opennms-datasources.
 # Expose the Karaf shell
 sed -i "s/sshHost.*/sshHost=0.0.0.0/g" $ONMS_ETC/org.apache.karaf.shell.cfg
 
-# Configuring RRD Strategy
-sed -i "s/#org.opennms.rrd.strategyClass=.*MultithreadedJniRrdStrategy/org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy/" $ONMS_ETC/rrd-configuration.properties
-sed -i "s/#opennms.library.jrrd2/opennms.library.jrrd2/" $ONMS_ETC/rrd-configuration.properties
-sed -i "s/#org.opennms.rrd.interfaceJar/org.opennms.rrd.interfaceJar/" $ONMS_ETC/rrd-configuration.properties
-sed -i "s/org.opennms.rrd.storeByGroup=.*/org.opennms.rrd.storeByGroup=true/" $ONMS_ETC/opennms.properties
-sed -i "s/org.opennms.rrd.storeByForeignSource=.*/org.opennms.rrd.storeByForeignSource=true/" $ONMS_ETC/opennms.properties
+# Configuring JRRD2 Strategy
+sed -i "/MultithreadedJniRrdStrategy/s/#//" $ONMS_ETC/rrd-configuration.properties
+sed -i "/jrrd2/s/#//" $ONMS_ETC/rrd-configuration.properties
+
+# Enable storeByGroup and storeByFS
+sed -i "/rrd.storeBy/s/false/true/" $ONMS_ETC/opennms.properties
 
 # Initialize and start OpenNMS
 /usr/sbin/haveged -w 1024
-$ONMS_BIN/runjava -s
-$ONMS_BIN/install -dis
+if [ ! -f $ONMS_ETC/java.conf ]; then
+  $ONMS_BIN/runjava -s
+fi
+if [ ! -f $ONMS_ETC/configured ]; then
+  $ONMS_BIN/install -dis
+fi
 $ONMS_BIN/opennms -f start
