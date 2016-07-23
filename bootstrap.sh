@@ -20,6 +20,9 @@ sed -i s/PG_PASSWORD/$(echo $POSTGRES_PASSWORD)/g $ONMS_ETC/opennms-datasources.
 # Expose the Karaf shell
 sed -i "s/sshHost.*/sshHost=0.0.0.0/g" $ONMS_ETC/org.apache.karaf.shell.cfg
 
+# Expose Event TCP Interface
+sed -i "s/127.0.0.1/0.0.0.0/g" $ONMS_ETC/eventd-configuration.xml
+
 # Configuring JRRD2 Strategy
 sed -i "/MultithreadedJniRrdStrategy/s/#//" $ONMS_ETC/rrd-configuration.properties
 sed -i "/jrrd2/s/#//" $ONMS_ETC/rrd-configuration.properties
