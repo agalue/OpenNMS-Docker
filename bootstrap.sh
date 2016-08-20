@@ -6,6 +6,7 @@
 OPENNMS_HOME=/opt/opennms
 ONMS_ETC=$OPENNMS_HOME/etc
 ONMS_BIN=$OPENNMS_HOME/bin
+PG_BIN=/usr/pgsql-9.5/bin
 
 if [ ! -d ${OPENNMS_HOME} ]; then
   echo "OpenNMS home directory doesn't exist in ${OPENNMS_HOME}"
@@ -30,12 +31,27 @@ sed -i "/jrrd2/s/#//" $ONMS_ETC/rrd-configuration.properties
 # Enable storeByGroup and storeByFS
 sed -i "/rrd.storeBy/s/false/true/" $ONMS_ETC/opennms.properties
 
-# Initialize and start OpenNMS
+# Start haveged (to reduce the startup time of OpenNMS)
 /usr/sbin/haveged -w 1024
+
+# Create pgpass
+echo "*:*:*:postgres:$POSTGRES_PASSWORD" > ~/.pgpass
+chmod 600 ~/.pgpass
+
+# Wait for PostgreSQL
+until $PG_BIN/psql -h "$POSTGRES_HOST" -p $POSTGRES_PORT -U "postgres" -c '\l'; do
+  >&2 echo "Postgres is unavailable - sleeping"
+  sleep 1
+done
+>&2 echo "Postgres is up - starting opennms"
+
+# Initialize OpenNMS
 if [ ! -f $ONMS_ETC/java.conf ]; then
   $ONMS_BIN/runjava -s
 fi
 if [ ! -f $ONMS_ETC/configured ]; then
   $ONMS_BIN/install -dis
 fi
+
+# Start OpenNMS
 $ONMS_BIN/opennms -f start
