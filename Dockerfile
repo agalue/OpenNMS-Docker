@@ -1,10 +1,10 @@
 FROM centos
 MAINTAINER agalue@opennms.org
 
-RUN yum -y install https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-2.noarch.rpm \
+RUN yum -y install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm \
  && yum -y install http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm \
- && yum -y install https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm \
- && yum -y install postgresql95 haveged rrdtool jrrd2 jicmp jicmp6 opennms-core opennms-webapp-jetty \
+ && yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+ && yum -y install postgresql96 haveged rrdtool jrrd2 jicmp jicmp6 opennms-core opennms-webapp-jetty \
  && yum clean all
 
 COPY opennms-datasources.xml /opt/opennms/etc/

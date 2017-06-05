@@ -10,7 +10,7 @@ This container is already available at Docker Hub, [here](https://hub.docker.com
 
 To run the container, keep in mind that it depends on having a container with PostgreSQL up and running, based on the [Official postgres image](https://hub.docker.com/_/postgres/)
 
-Manually Start
+Manual Start
 ==============
 
 To Start PostgreSQL use the `postgresql_start.sh` script (PostgreSQL will be exposed on port 5433).

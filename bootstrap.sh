@@ -6,7 +6,7 @@
 OPENNMS_HOME=/opt/opennms
 ONMS_ETC=$OPENNMS_HOME/etc
 ONMS_BIN=$OPENNMS_HOME/bin
-PG_BIN=/usr/pgsql-9.5/bin
+PG_BIN=/usr/pgsql-9.6/bin
 
 if [ ! -d ${OPENNMS_HOME} ]; then
   echo "OpenNMS home directory doesn't exist in ${OPENNMS_HOME}"
