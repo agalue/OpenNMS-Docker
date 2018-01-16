@@ -21,7 +21,7 @@ services:
     ports:
       - "8980:8980"
     depends_on:
-      - postgres
+      - postgres_server
     volumes:
       - opennms_etc:/opt/opennms/etc
       - opennms_share:/opt/opennms/share
