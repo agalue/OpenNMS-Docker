@@ -13,10 +13,38 @@ if [ ! -d ${OPENNMS_HOME} ]; then
   exit
 fi
 
-# Configure PostgreSQL connections
-sed -i s/PG_HOST/$(echo $POSTGRES_HOST)/g $ONMS_ETC/opennms-datasources.xml
-sed -i s/PG_PORT/$(echo $POSTGRES_PORT)/g $ONMS_ETC/opennms-datasources.xml
-sed -i s/PG_PASSWORD/$(echo $POSTGRES_PASSWORD)/g $ONMS_ETC/opennms-datasources.xml
+# Configure PostgreSQL
+cat <<EOF > $ONMS_ETC/opennms-datasources.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources
+  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
+    idleTimeout="600"
+    loginTimeout="3"
+    minPool="50"
+    maxPool="50"
+    maxSize="50" />
+
+  <jdbc-data-source name="opennms"
+                    database-name="opennms"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://$POSTGRES_HOST:$POSTGRES_PORT/opennms"
+                    user-name="opennms"
+                    password="opennms">
+    <param name="connectionTimeout" value="0"/>
+  </jdbc-data-source>
+
+  <jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://$POSTGRES_HOST:$POSTGRES_PORT/template1"
+                    user-name="postgres"
+                    password="$POSTGRES_PASSWORD" />
+</datasource-configuration>
+EOF
 
 # Expose the Karaf shell
 sed -i "s/sshHost.*/sshHost=0.0.0.0/g" $ONMS_ETC/org.apache.karaf.shell.cfg

@@ -13,8 +13,8 @@ To run the container, keep in mind that it depends on having a container with Po
 Manual Start
 ==============
 
-To Start PostgreSQL use the `postgresql_start.sh` script (PostgreSQL will be exposed on port 5433).
-To Start OpenNMS use the `opennms_start.sh` script (OpenNMS WebUI will be exposed on port 8981).
+To Start PostgreSQL use the `postgresql_start.sh` script (PostgreSQL will be exposed on port 5432).
+To Start OpenNMS use the `opennms_start.sh` script (OpenNMS WebUI will be exposed on port 8980).
 
 Automatic Start
 ===============

@@ -1,23 +1,29 @@
 version: '2'
+
 services:
-  postgres:
-    image: postgres
-    container_name: postgres_server
+
+  postgres_server:
+    image: postgres:9
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5433:5432"
-  opennms:
+      - "5432:5432"
+    volumes:
+      - opennms_db:/var/lib/postgresql/data
+
+  opennms_server:
     image: agalue/opennms
-    container_name: opennms_server
     environment:
       - POSTGRES_HOST=postgres_server
       - POSTGRES_PORT=5432
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "8981:8980"
+      - "8980:8980"
     depends_on:
-      - "postgres"
-    links:
+      - postgres
+    volumes:
+      - opennms_etc:/opt/opennms/etc
+      - opennms_share:/opt/opennms/share
+      - opennms_logs:/opt/opennms/logs
       - postgres:postgres_server
