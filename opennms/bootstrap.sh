@@ -153,20 +153,20 @@ echo "*:*:*:postgres:$POSTGRES_PASSWORD" > ~/.pgpass
 chmod 600 ~/.pgpass
 
 # Wait for PostgreSQL
-until $PG_BIN/psql -h "$POSTGRES_HOST" -p $POSTGRES_PORT -U "postgres" -c '\l'; do
-  >&2 echo "Postgres is unavailable - sleeping"
-  sleep 1
+while ! pg_isready -h "$POSTGRES_HOST" -p $POSTGRES_PORT 
+do
+  echo "$(date) - waiting for database to start"
+  sleep 5
 done
->&2 echo "Postgres is up - starting opennms"
 
 # Initialize OpenNMS
 if [ ! -f $ONMS_ETC/java.conf ]; then
   $ONMS_BIN/runjava -s
 fi
-#touch $ONMS_ETC/configured
-if [ ! -f $ONMS_ETC/configured ]; then
-  $ONMS_BIN/install -dis
-fi
+touch $ONMS_ETC/configured
+#if [ ! -f $ONMS_ETC/configured ]; then
+#  $ONMS_BIN/install -dis
+#fi
 
 # Start OpenNMS
 $ONMS_BIN/opennms -f start
