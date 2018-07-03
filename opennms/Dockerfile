@@ -1,0 +1,34 @@
+FROM centos:7
+MAINTAINER agalue@opennms.org
+
+ARG onms_repo=stable
+ARG oracle_jdk_url=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm
+
+WORKDIR /opt/opennms
+
+COPY bootstrap.sh /tmp
+
+RUN groupadd -r opennms \
+ && useradd -r -g opennms -d /opt/opennms -s /sbin/nologin -c 'OpenNMS User' opennms \
+ && yum install -y wget \
+ && yum -y install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm \
+ && yum -y install http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel7.noarch.rpm \
+ && yum -y install epel-release \
+ && wget -c --quiet --header 'Cookie: oraclelicense=accept-securebackup-cookie' -O /tmp/jdk8.rpm $oracle_jdk_url \
+ && yum -y install /tmp/jdk8.rpm \
+ && rm -f /tmp/jdk8.rpm \
+ && yum -y install postgresql96 haveged rrdtool jrrd2 jicmp jicmp6 opennms-core opennms-webapp-jetty \
+ && yum clean all \
+ && chown -R opennms:opennms /opt/opennms /var/opennms /var/log/opennms \
+ && sed -r -i '/^RUNAS/s/root/opennms/' /opt/opennms/bin/install \
+ && sed -r -i '/^RUNAS/s/root/opennms/' /opt/opennms/bin/opennms \
+ && cp /tmp/bootstrap.sh bin \
+ && chmod +x bin/bootstrap.sh
+
+USER opennms
+
+EXPOSE 8980 5817 8101 162
+
+CMD ["bin/bootstrap.sh"]
+
+VOLUME ["etc","share","logs"]

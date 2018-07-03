@@ -2,8 +2,9 @@
 
 To build the container:
 
-```
-docker build -t agalue/opennms:latest .
+```shell
+cd opennms
+docker build -t opennms-ui:latest .
 ```
 
 This container is already available at Docker Hub, [here](https://hub.docker.com/r/agalue/opennms/).
@@ -21,6 +22,6 @@ Automatic Start
 
 From the directory on which you have `docker-compose.yml`:
 
-```
+```shell
 docker-compose up
 ```
