@@ -31,7 +31,7 @@ spec:
       ports:
         - containerPort: 5432
     - name: opennms
-      image: agalue/opennms-ui:22.0.1
+      image: agalue/opennms-ui-openjdk:22.0.1
       env:
         - name: POSTGRES_HOST
           value: "127.0.0.1"

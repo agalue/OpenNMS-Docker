@@ -4,7 +4,7 @@ To build the container:
 
 ```shell
 cd opennms
-docker build -t opennms-ui:latest .
+docker build -t agalue/opennms-ui:22.0.1 .
 ```
 
 This container is already available at Docker Hub, [here](https://hub.docker.com/r/agalue/opennms/).
@@ -24,4 +24,14 @@ From the directory on which you have `docker-compose.yml`:
 
 ```shell
 docker-compose up
+```
+
+Kubernetes Start
+===============
+
+There are 3 different examples to deploy OpenNMS in kubernetes.
+
+```shell
+cd opennms/kubernetes
+kubectl create -f onms-and-pg-deployments.yaml
 ```

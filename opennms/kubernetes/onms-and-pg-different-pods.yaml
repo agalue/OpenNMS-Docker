@@ -53,7 +53,7 @@ metadata:
 spec:
   containers:
     - name: opennms
-      image: agalue/opennms-ui:22.0.1
+      image: agalue/opennms-ui-openjdk:22.0.1
       env:
         - name: POSTGRES_HOST
           value: "postgres.default.svc.cluster.local"
