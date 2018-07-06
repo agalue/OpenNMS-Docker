@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: onms-ui
+  labels:
+    app: opennms
+spec:
+  selector:
+    app: opennms
+  ports:
+    - port: 8980
+      targetPort: 8980
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: onms-ui
+  labels:
+    app: opennms
+spec:
+  containers:
+    - name: postgres
+      image: postgres:9
+      env:
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+      ports:
+        - containerPort: 5432
+    - name: opennms
+      image: agalue/opennms-ui:22.0.1
+      env:
+        - name: POSTGRES_HOST
+          value: "127.0.0.1"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+      ports:
+        - containerPort: 8980
