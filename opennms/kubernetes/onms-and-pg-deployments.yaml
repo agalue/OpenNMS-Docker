@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opennms
+  labels:
+    app: opennms
+spec:
+  selector:
+    app: opennms
+  type: LoadBalancer
+  ports:
+    - port: 8980
+      targetPort: 8980
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  selector:
+    app: postgres
+  clusterIP: None
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:9
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+          ports:
+            - name: pg-port
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+              - pg_isready
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: pg-port
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opennms
+  labels:
+    app: opennms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opennms
+  template:
+    metadata:
+      labels:
+        app: opennms
+    spec:
+      containers:
+        - name: opennms
+          image: agalue/opennms-ui:22.0.1
+          env:
+            - name: POSTGRES_HOST
+              value: "postgres.default.svc.cluster.local"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+          ports:
+            - name: onms-port
+              containerPort: 8980
+          readinessProbe:
+            tcpSocket:
+              port: onms-port
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /opennms/login.jsp
+              port: onms-port
+            initialDelaySeconds: 60
+            periodSeconds: 60
