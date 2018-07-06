@@ -2,7 +2,6 @@ FROM centos:7
 MAINTAINER agalue@opennms.org
 
 ARG onms_repo=stable
-ARG oracle_jdk_url=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm
 
 WORKDIR /opt/opennms
 
